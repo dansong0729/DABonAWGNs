@@ -11,14 +11,6 @@ function MI = discreteMI(pX,Q)
 
 %compute H(Y)
 pY = Q*pX;
-%=====START DEBUGGING BS=====
-if ~all(pY>=0)
-    pY = pY
-    Q=Q
-    pX=pX
-    assert(false)
-end
-%=====END DEBUGGING BS=====
 mask = (pY ==0);
 HY = reallog(pY)./log(2);
 HY(mask) = 0; %kill -Inf since we want 0log0=0

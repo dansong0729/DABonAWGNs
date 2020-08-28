@@ -16,12 +16,5 @@ pYX = normcdf(q-xsupport.', 0, N);
 %subtract cdf at left boundary from cdf at right boundary for bin
 %probability
 pYX = pYX(2:end, :) - pYX(1:end-1, :);
-%=====START DEBUGGING BS=====
-if ~all(pYX>=0)
-    xsupport = xsupport
-    q = q
-    assert(false)
-end
-%=====END DEBUGGING BS=====
 end
 
