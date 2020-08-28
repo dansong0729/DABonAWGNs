@@ -6,7 +6,7 @@ function [q] = optimizebins(pX, xsupport, N)
 %   ORDER
 %   N: channel noise power
 
-endgap = 1e-4; %1e-4 %threshold of q change for convergence
+endgap = 1e-4; %1e-4 %threshold of MI change for convergence
 maxIter = 1000;
 
 %initialize q to a guess, TODO: improve this (MLE?)
@@ -20,7 +20,7 @@ options = optimset('FunValCheck','on'); %for debugging
 % qhist = [];
 % %=====END=====
 for iter = 1:maxIter
-    qnew = q;
+    oldMI = discreteMI(pX, getawgnqtransition(xsupport, q, N));
     for i = 2:size(q,1)-1
         %function to minimize:
         %negative of q(i) conntribution to mutual information
@@ -29,13 +29,14 @@ for iter = 1:maxIter
         lower = max(q(i-1), q(i)-abs(q(i))-endgap*10);
         upper = min(q(i+1), q(i)+abs(q(i))+endgap*10);
         %maximize MI over q(i) using old q values
-        qnew(i) = fminbnd(objective, lower, upper, options);
+        q(i) = fminbnd(objective, lower, upper, options);
     end
-    if all(~(abs(qnew-q)>endgap)) %careful of Inf-Inf
+    newMI = discreteMI(pX, getawgnqtransition(xsupport, q, N));
+    %check MI convergence
+    if all(~((newMI-oldMI)>endgap)) %just stops if this produces NaN
         %if no boundary moved more that endgap
         break
     end
-    q = qnew;
 %     %=====DEBUG=====
 %     qhist = [qhist q];
 %     %=====END=====
