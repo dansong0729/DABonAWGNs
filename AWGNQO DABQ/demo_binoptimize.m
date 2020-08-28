@@ -5,12 +5,13 @@ pX = [.5; .5];
 N = rand(1)*5;
 optimizebins(pX, xsupport, N)
 %% fuzzing, trying to fix negative probability
-for i = 1:20
+for i = 1:200
     n = randi(5, 1)+1;
     xsupport = sort(rand(n,1)*4-2);
     pX = rand(n, 1);
     pX = pX./sum(pX);
-    N = rand(1)*2;
+    N = (rand(1)+.1)*2;
 
-    optimizebins(pX, xsupport, N)
+    optimizebins(pX, xsupport, N);
 end
+"end"

@@ -16,32 +16,44 @@ q = [-Inf; q; Inf];
 
 
 options = optimset('FunValCheck','on'); %for debugging
-
+% %=====DEBUG=====
+% qhist = [];
+% %=====END=====
 for iter = 1:maxIter
-    nochange = true; %flag to decide termination
-    qindices = 2:size(q)-1; %skip infinities; maybe randomize order later
-    %TODO parfor? must wait until end to change q for loop independence
-    %qnew = q
-    for i = qindices
-        old = q(i);
-        %function to minimize
+    qnew = q;
+    for i = 2:size(q,1)-1
+        %function to minimize:
+        %negative of q(i) conntribution to mutual information
         objective = @(qi) -discreteMI(pX, getawgnqtransition(xsupport, [q(i-1); qi; q(i+1)], N));
         %deal with infinites in bounds
         lower = max(q(i-1), q(i)-abs(q(i))-endgap*10);
         upper = min(q(i+1), q(i)+abs(q(i))+endgap*10);
         %maximize MI over q(i) using old q values
-        q(i) = fminbnd(objective, lower, upper, options); %TODO change to qnew
-        if abs(q(i)-old)>endgap
-            nochange = false;
-        end
+        qnew(i) = fminbnd(objective, lower, upper, options);
     end
-    if nochange
+    if all(~(abs(qnew-q)>endgap)) %careful of Inf-Inf
         %if no boundary moved more that endgap
         break
     end
-    %q = qnew
+    q = qnew;
+%     %=====DEBUG=====
+%     qhist = [qhist q];
+%     %=====END=====
 end
-iter
+% %=====DEBUG=====
+% if iter > 100
+%     iter
+%     pX = pX
+%     xsupport = xsupport
+%     N = N
+%     figure
+%     hold on
+%     for qi = qhist'
+%         plot([1:iter]', qi)
+%     end
+%     plot(zeros(size(xsupport), 1), xsupport)
+% end
+% %=====END=====
 
 end
 
