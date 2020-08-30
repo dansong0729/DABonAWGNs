@@ -3,13 +3,14 @@ function [pX, MI, E] = BAE_discrete(Q, init, ej, s, tol)
 %   Straight outta the Blahut '72 paper.
 %   INPUTs:
 %   Q: matrix defining p(y|x), with probability vector columns
+%       Q_ij = p(y_i|x_j)
 %   init: initial guess for input pmf pj, as column probability vector
-%   ej: "cost" of support points, same order as init (e.g. energy)
+%   ej: "cost" (e.g. sq. amplitude) of support points, same order as init 
 %   s: parameter controlling power constraint, set s=0 for unconstrained
-%   tol: Max error for termination
+%   tol: max error for termination
 %
 %   OUTPUTS:
-%   pX: Capacity achieving input pmf (pj in paper), as column
+%   pX: Capacity achieving input pmf (pj in paper), as column probability vector
 %   MI: Capacity, in bits (CE, in paper)
 %   E: Cost of pX
 

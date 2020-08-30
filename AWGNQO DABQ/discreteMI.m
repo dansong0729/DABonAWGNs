@@ -2,9 +2,10 @@ function MI = discreteMI(pX,Q)
 %discreteMI: Computes Mutual information given input pmf and transistion
 %matrix.
 %   INPUTS:
-%   pX: column probability vector
+%   pX: input pmf, as column probability vector
 %   Q: a matrix with probability vector columns
-%   OUTPUTS: Mutual information, in bits
+%   OUTPUT:
+%   MI: Mutual information, in bits
 
 %By passing only some rows of transition matrix as Q, the contribution of
 %the corresponding output points is computed.
