@@ -1,4 +1,4 @@
-function[p_star, MI, EE, s] = BAE_search(pX, xSupport, q, N, E, s_init, ETolerance, BAETolerance)
+function[p_star, MI, EE, s] = BAE_search(pX, xsupport, q, N, E, s_init, ETolerance, BAETolerance)
 %BAE_SEARCH Compute compacity of AWGNQO channel with input power constraint
 %   Searches over Lagrange multiplier s passed to constrained
 %   Blahut-Arimoto algorithm (BAE_search.m), and outputs resulting
@@ -22,32 +22,34 @@ function[p_star, MI, EE, s] = BAE_search(pX, xSupport, q, N, E, s_init, EToleran
 
 %compute constants
 Q = getawgnqtransition(xsupport, q, N); %channel transition matrix
-ej = xSupport.^2; %power cost of each point
+ej = xsupport.^2; %power cost of each point
 
 p_star = pX;
 
 %wrap BAE_discrete into function s |-> EE-E to pass into fzero
     function err = wrapper(ess)
-        guess = p_star; %TODO better guess (average multiple pX?)
+        guess = (pX+p_star)/2; %TODO better guess (average multiple pX?)
         %intentional side effect of writing to pX and MI
         %output pX will serve as initial guess for next evaulation
         [p_star, MI, tempE] = BAE_discrete(Q, guess, ej, ess, BAETolerance);
-        err = tempE-E+ETolerance; %err on the side of not exceeding E
+        err = tempE-E;
     end
 
 %check if constraint too weak
 s = 0;
-EE = wrapper(s) + E - ETolerance;
+EE = wrapper(s) + E;
 if EE < E
     fprintf('BAE finds p(x) with E = %f, constraint irrelevant', EE);
     return
 end
 
 %get carried by matlab
-options = optimset('TolX', ETolerance); %can turn on plotting here
+options = optimset('TolX', ETolerance);
+%can turn on plotting here
+%options = optimset('TolX', ETolerance, 'PlotFcns',{@optimplotfval});
 [s, EE, ~, ~] = fzero(@wrapper, s_init, options); %TODO better intialization
-%EE = wrapper(s); %just in case fzero's last call to wrapper wasn't at s
-EE = EE + E - ETolerance;
+EE = wrapper(s + ETolerance); %err on the side of not exceeding E
+EE = EE + E;
 
 end
 

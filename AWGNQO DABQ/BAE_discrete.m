@@ -14,7 +14,7 @@ function [p_star, MI, E] = BAE_discrete(Q, init, ej, s, tol)
 %   MI: Capacity, in bits (CE, in paper)
 %   E: Cost of pX
 
-maxIter = 1e3;
+maxIter = 1e6;
 
 pj = init;
 for i=1:maxIter
