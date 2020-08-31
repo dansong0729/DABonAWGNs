@@ -1,4 +1,4 @@
-function [pX, MI, E] = BAE_discrete(Q, init, ej, s, tol)
+function [p_star, MI, E] = BAE_discrete(Q, init, ej, s, tol)
 %DISCRETE_BA Computes capacity and optimal input pmf of constrained DMC
 %   Straight outta the Blahut '72 paper.
 %   INPUTs:
@@ -35,7 +35,7 @@ for i=1:maxIter
     if IU - IL < tol
         E = pj.'*ej;
         MI = s*E+IL;
-        pX = pj;
+        p_star = pj;
         return
     end
     
@@ -45,6 +45,6 @@ end
 fprintf('maxIter reached in Blahut Arimoto\n')
 E = pj.'*ej;
 MI = s*E+IL;
-pX = pj;
+p_star = pj;
 end
 
