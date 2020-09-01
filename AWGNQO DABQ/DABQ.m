@@ -3,7 +3,7 @@ function [pX, xsupport, q, MI] = DABQ(N, E, m)
 %   Detailed explanation goes here
 
 %settings
-maxIter = 1e2;
+maxIter = 1e3;
 ETolerance = 1e-5;
 BAETolerance = 1e-5;
 DABTolerance = 3e-5;
@@ -29,7 +29,8 @@ for i = 1:maxIter
     if MI - oldMI < tol
         break
     end
+    oldMI = MI;
 end
-
+i
 end
 
