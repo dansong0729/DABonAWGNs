@@ -31,6 +31,6 @@ end
 InputPMF([index,m-index+1]) = scale*InputPMF(index);
 InputPMF(2:end-1) = scale_in*InputPMF(2:end-1);
 % Compute Mutual Information
-pYX = getawgnqtransition(xsupport, q, N);
-sMI = MutualInformation(InputPMF, pYX);
+pYX = getawgnqtransition(xSupport, q, N);
+sMI = discreteMI(InputPMF, pYX);
 end

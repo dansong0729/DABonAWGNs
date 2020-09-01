@@ -36,6 +36,6 @@ scale_out = (1-P_in)/P_out - P_star/P_out*scale;
 InputPMF([index,m-index+1]) = scale*InputPMF(index);
 InputPMF([1:index-1,m-index+2:m]) = InputPMF([1:index-1,m-index+2:m])*scale_out;
 % Compute Mutual Information
-pYX = getawgnqtransition(xsupport, q, N);
+pYX = getawgnqtransition(xSupport, q, N);
 sMI = discreteMI(InputPMF, pYX);
 end
