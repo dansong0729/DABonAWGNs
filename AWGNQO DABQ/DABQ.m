@@ -31,6 +31,5 @@ for i = 1:maxIter
     end
     oldMI = MI;
 end
-i
 end
 
