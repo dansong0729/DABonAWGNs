@@ -45,7 +45,11 @@ for iter = 1:rounds
                 E_in = sum(e([i+1:m-i]));
             end
             xSearchLim = max(xsupport(i-1),-sqrt((E-E_in)/(1-P_in)));
-            
+            %jank fix
+            if xSearchLim > xsupport(i)
+                continue
+            end
+            %end jank
             %objective to minimize: negative mutual information with
             %rescaled xsupport 
             fun = @(Qx_star) -Find_symmetric_I_x_star_out(xsupport, pX, i, Qx_star, q, N, E);
@@ -53,6 +57,9 @@ for iter = 1:rounds
         else
             %outmost point special case
             xSearchLim = q(2) - 5*sqrt(N); %5 std out from leftmost boundary
+            %jank fix
+            xSearchLim = min(xSearchLim, x_star(i) - 5*sqrt(N));
+            %end jank
             if m == 3
                 pX([1,3]) = pX([1,3])-1e-3;
                 pX(2) = pX(2)+2e-3;
