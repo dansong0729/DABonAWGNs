@@ -1,4 +1,4 @@
-function[sMI] = Find_symmetric_I_x_star_out(xSupport, InputPMF, index, x_star, q, N, E)
+function[sMI, p_new] = Find_symmetric_I_x_star_out(xSupport, InputPMF, index, x_star, q, N, E)
 % checked: this calculates a new distribution where the average energy is
 %   maintained by "stealing" probability from the points further out from the
 %   points being moved 
@@ -38,4 +38,6 @@ InputPMF([1:index-1,m-index+2:m]) = InputPMF([1:index-1,m-index+2:m])*scale_out;
 % Compute Mutual Information
 pYX = getawgnqtransition(xSupport, q, N);
 sMI = discreteMI(InputPMF, pYX);
+
+p_new = InputPMF;
 end

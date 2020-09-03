@@ -1,4 +1,4 @@
-function [x_star] = iteratesupport(pX, xsupport, q, N, E)
+function [x_star, p_new] = iteratesupport(pX, xsupport, q, N, E)
 %ITERATESUPPORT Perform round of updating support points
 %   Described by step 4 in paper. Overall structure is copied from
 %   optimizebins; innermost loop logic same as FindMaximumI in PC-AWGN.
@@ -36,7 +36,7 @@ for iter = 1:rounds
             %general case
             
             %compute bounds
-            e = pX.*xsupport.^2;
+            e = pX.*x_star.^2;
             if m == 4 
                 P_in = 0;
                 E_in = 0;
@@ -44,33 +44,30 @@ for iter = 1:rounds
                 P_in = sum(pX([i+1:m-i]));
                 E_in = sum(e([i+1:m-i]));
             end
-            xSearchLim = max(xsupport(i-1),-sqrt((E-E_in)/(1-P_in)));
-            %jank fix
-            if xSearchLim > xsupport(i)
-                continue
-            end
-            %end jank
+            xSearchLim = max(x_star(i-1),-sqrt((E-E_in)/(1-P_in)));
             %objective to minimize: negative mutual information with
             %rescaled xsupport 
-            fun = @(Qx_star) -Find_symmetric_I_x_star_out(xsupport, pX, i, Qx_star, q, N, E);
-            [x_star(i), ~, ~] = fminbnd(fun, xSearchLim, xsupport(i)+TolX, options);
+            fun = @(Qx_star) -Find_symmetric_I_x_star_out(x_star, pX, i, Qx_star, q, N, E);
+            [x_star(i), ~, ~] = fminbnd(fun, xSearchLim, x_star(i)+TolX, options);
+            %update pmf
+            [~, pX] = Find_symmetric_I_x_star_out(x_star, pX, i, x_star(i), q, N, E);
         else
-            %outmost point special case
+            %outermost point special case
             xSearchLim = q(2) - 5*sqrt(N); %5 std out from leftmost boundary
-            %jank fix
-            xSearchLim = min(xSearchLim, x_star(i) - 5*sqrt(N));
-            %end jank
             if m == 3
                 pX([1,3]) = pX([1,3])-1e-3;
                 pX(2) = pX(2)+2e-3;
             end
             %objective to minimize: negative mutual information with
             %rescaled xsupport 
-            fun = @(Qx_star) -Find_symmetric_I_x_star_in(xsupport, pX, i, Qx_star, q, N, E);
-            [x_star(i), ~, ~] = fminbnd(fun, xSearchLim, xsupport(i)+TolX, options);
+            fun = @(Qx_star) -Find_symmetric_I_x_star_in(x_star, pX, i, Qx_star, q, N, E);
+            [x_star(i), ~, ~] = fminbnd(fun, xSearchLim, x_star(i)+TolX, options);
+            %update pmf
+            [~, pX] = Find_symmetric_I_x_star_in(x_star, pX, i, x_star(i), q, N, E);
         end
         %move mirror point
         x_star(m+1-i) = -x_star(i);
     end
 end
+p_new = pX;
 end

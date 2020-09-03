@@ -1,4 +1,4 @@
-function[sMI] = Find_symmetric_I_x_star_in(xSupport, InputPMF, index, x_star, q, N, E)
+function[sMI, p_new] = Find_symmetric_I_x_star_in(xSupport, InputPMF, index, x_star, q, N, E)
 % USE THIS TO DO THE SAME THING AS THE ORIGINAL FUNCTION, EXCEPT YOU MOVE
 % AN OUTER POINT OUTWARDS, WHILE FLOWING PROBABILITY TO/FROM INTERNAL
 % POINTS. 
@@ -33,4 +33,6 @@ InputPMF(2:end-1) = scale_in*InputPMF(2:end-1);
 % Compute Mutual Information
 pYX = getawgnqtransition(xSupport, q, N);
 sMI = discreteMI(InputPMF, pYX);
+
+p_new = InputPMF;
 end
