@@ -32,6 +32,11 @@ for iter = 1:rounds
         x_star(ceil(m/2)) = 0; 
     end
     for i = indices
+        %handle degenerate case of 0 probability point
+        if pX(i) == 0
+            continue
+        end
+        %now guaranteed to be at a support point
         if i ~= 1
             %general case
             
@@ -44,16 +49,18 @@ for iter = 1:rounds
                 P_in = sum(pX([i+1:m-i]));
                 E_in = sum(e([i+1:m-i]));
             end
-            xSearchLim = max(x_star(i-1),-sqrt((E-E_in)/(1-P_in)));
+            lower = max(x_star(i-1),-sqrt((E-E_in)/(1-P_in)));
+            upper = min(0, x_star(i+1));
             %objective to minimize: negative mutual information with
             %rescaled xsupport 
             fun = @(Qx_star) -Find_symmetric_I_x_star_out(x_star, pX, i, Qx_star, q, N, E);
-            [x_star(i), ~, ~] = fminbnd(fun, xSearchLim, x_star(i)+TolX, options);
+            [x_star(i), ~, ~] = fminbnd(fun, lower, upper, options);
             %update pmf
             [~, pX] = Find_symmetric_I_x_star_out(x_star, pX, i, x_star(i), q, N, E);
         else
             %outermost point special case
-            xSearchLim = q(2) - 5*sqrt(N); %5 std out from leftmost boundary
+            lower = q(2) - 5*sqrt(N); %5 std out from leftmost boundary
+            upper = min(-sqrt(E), x_star(i+1));
             if m == 3
                 pX([1,3]) = pX([1,3])-1e-3;
                 pX(2) = pX(2)+2e-3;
@@ -61,7 +68,7 @@ for iter = 1:rounds
             %objective to minimize: negative mutual information with
             %rescaled xsupport 
             fun = @(Qx_star) -Find_symmetric_I_x_star_in(x_star, pX, i, Qx_star, q, N, E);
-            [x_star(i), ~, ~] = fminbnd(fun, xSearchLim, x_star(i)+TolX, options);
+            [x_star(i), ~, ~] = fminbnd(fun, lower, upper, options);
             %update pmf
             [~, pX] = Find_symmetric_I_x_star_in(x_star, pX, i, x_star(i), q, N, E);
         end
