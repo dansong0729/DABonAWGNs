@@ -16,12 +16,13 @@ function [p_star, MI, E] = BAE_discrete(Q, init, ej, s, tol)
 
 maxIter = 1e6;
 
+Qmask = (Q==0); %log(0) causes issues
 pj = init;
 for i=1:maxIter
-    mask = (Q==0); %where NaNs will occur
     %compute matrix of summands for cj formula
     cj = log2(Q./(Q*pj));
-    cj(mask) = 0; %kill the -Inf so no NaN
+    cj(Qmask) = 0; %0*log(0) conventionally taken as 0
+    cj(pj==0, :) = 0; %same for where pj causes Inf
     cj = Q.*cj;
     
     cj = sum(cj, 1)'-s*ej; %turn cj into column before subtraction

@@ -59,7 +59,7 @@ for iter = 1:rounds
             [~, pX] = Find_symmetric_I_x_star_out(x_star, pX, i, x_star(i), q, N, E);
         else
             %outermost point special case
-            lower = q(2) - 5*sqrt(N); %5 std out from leftmost boundary
+            lower = q(2) - 10*sqrt(N); %5 std out from leftmost boundary
             upper = min(-sqrt(E), x_star(i+1));
             if m == 3
                 pX([1,3]) = pX([1,3])-1e-3;
