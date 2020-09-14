@@ -28,27 +28,39 @@ p_star = pX;
 
 %wrap BAE_discrete into function s |-> EE-E to pass into fzero
     function err = wrapper(ess)
-        guess = (pX+p_star)/2; %TODO better guess (average multiple pX?)
+        guess = (pX+7*p_star)/8; %TODO better guess (average multiple pX?)
         %intentional side effect of writing to pX and MI
         %output pX will serve as initial guess for next evaulation
         [p_star, MI, tempE] = BAE_discrete(Q, guess, ej, ess, BAETolerance);
         err = tempE-E;
     end
 
+%OutputFcn to determine halting
+    function stop = outfun(~, optimValues, ~, varargin)
+        %can turn on plotting here
+        %optimplotfval(x, optimValues, state);
+        %halt only when under power constraint
+        stop = false;
+        %fval is empty on the first iteration (wtf?!) so check is needed
+        if ~isempty(optimValues.fval)
+            stop = (optimValues.fval<0)&(optimValues.fval>-ETolerance);
+        end
+    end
+
 %check if constraint too weak
 s = 0;
 EE = wrapper(s) + E;
 if EE < E
-    fprintf('BAE finds p(x) with E = %f, constraint irrelevant', EE);
+    fprintf('BAE finds p(x) with E = %f, constraint irrelevant\n', EE);
     return
 end
 
 %get carried by matlab
-options = optimset('TolX', ETolerance);
-%can turn on plotting here
-%options = optimset('TolX', ETolerance, 'PlotFcns',{@optimplotfval});
-[s, EE, ~, ~] = fzero(@wrapper, s_init, options); %TODO better intialization
-EE = wrapper(s + ETolerance); %err on the side of not exceeding E
+options = optimset('TolX', eps, 'OutputFcn', {@outfun},...
+                    'FunValCheck', 'on', 'Display', 'off');
+[s, ~, ~, ~] = fzero(@wrapper, s_init, options);
+%paranoia; in case fzero's last call to wrapper wasn't at s
+EE = wrapper(s);
 EE = EE + E;
 
 end
