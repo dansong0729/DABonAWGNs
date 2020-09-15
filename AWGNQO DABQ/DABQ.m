@@ -1,4 +1,4 @@
-function [pX, xsupport, q, MI] = DABQ(N, E, m)
+function [pX, xsupport, q, MI, s] = DABQ(N, E, m)
 %DABQ Summary of this function goes here
 %   Detailed explanation goes here
 
