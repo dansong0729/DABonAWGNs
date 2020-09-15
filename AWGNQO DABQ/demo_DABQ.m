@@ -1,13 +1,13 @@
 N = 1;
-E = 10;
-m = 8;
+E = 10^(2.4);
+m = 32;
 
 [pX, xsupport, q, MI] = DABQ(N,E,m)
 %% compute
 N = 1;
-m = 8;
-dBs = [-20, -10, -5, 0, 3, 5, 7, 10, 12, 15, 17, 20];
-%dBs = [-20, -10, -5, 0, 1:30];
+m = 16;
+% dBs = [-20, -10, -5, 0, 3, 5, 7, 10, 12, 15, 17, 20];
+dBs = 20:35;
 inputPMFs = [];
 xSupports = [];
 qs = [];
@@ -41,9 +41,10 @@ figure(2)
 xlim([min(dBs)-1,max(dBs)+1])
 hold on
 for i = 1:length(dBs)
-    for j = 1:m
+    [pX_merged, xsupport_merged] = remove_redundant(inputPMFs(:, i), xSupports(:, i));
+    for j = 1:length(pX_merged)
         %pmf points
-        plot(dBs(i), xSupports(j, i),'ko', 'MarkerSize', 30*sqrt(inputPMFs(j,i))/2+1e-10, 'MarkerFaceColor', 'r')
+        plot(dBs(i), xsupport_merged(j),'ko', 'MarkerSize', 30*sqrt(pX_merged(j))/2+1e-10, 'MarkerFaceColor', 'r')
     end
 end
 %plot bin thresholds
