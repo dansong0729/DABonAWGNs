@@ -1,10 +1,9 @@
-function [pX_out,xsupport_out] = remove_redundant(pX, xsupport)
+function [pX_out,xsupport_out] = remove_redundant(pX, xsupport, prob_thresh, sup_thresh)
 %REMOVE_REDUNDANT Delete low probability points and merge close points.
-%   Detailed explanation goes here
-
-%SETTINGS HERE
-prob_thresh = 1e-10;
-sup_thresh = 3e-3; %rel. to sigma
+%   INPUTS
+%   prob_thresh: lowest probability to keep
+%   sup_thresh: distance, in units of standard deviation, within which
+%   points are considered the same
 
 sigma = sqrt(pX.'*xsupport.^2); %std dev
 sup_thresh = sup_thresh*sigma;

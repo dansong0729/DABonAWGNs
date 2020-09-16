@@ -5,7 +5,7 @@ function[p_star, MI, EE, s] = BAE_search(pX, xsupport, q, N, E, s_init, EToleran
 %   capacity, input distribution, and energy achieved.
 %   
 %   INPUTS:
-%   init: initial guess for input pmf, as column probability vector
+%   pX: initial guess for input pmf, as column probability vector
 %   xsupport: column vector of input pmf support points, same order as init
 %   q: bin thresholds in ascending order, as column vector
 %   N: channel noise power
@@ -28,6 +28,8 @@ p_star = pX;
 
 %wrap BAE_discrete into function s |-> EE-E to pass into fzero
     function err = wrapper(ess)
+        %average guess to avoid 0s in initializing (can't ever recover from
+        %being zero in BAE)
         guess = (pX+7*p_star)/8; %TODO better guess (average multiple pX?)
         %intentional side effect of writing to pX and MI
         %output pX will serve as initial guess for next evaulation
@@ -56,6 +58,7 @@ if EE < E
 end
 
 %get carried by matlab
+%outfun handles termination, so TolX is made as small as possible (eps)
 options = optimset('TolX', eps, 'OutputFcn', {@outfun},...
                     'FunValCheck', 'on', 'Display', 'off');
 [s, ~, ~, ~] = fzero(@wrapper, s_init, options);

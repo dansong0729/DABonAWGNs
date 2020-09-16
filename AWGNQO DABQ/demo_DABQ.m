@@ -1,29 +1,30 @@
 N = 1;
-E = 10^(2.4);
-m = 32;
+E = 10^(3.1);
+m = 4;
 
 [pX, xsupport, q, MI] = DABQ(N,E,m)
 %% compute
 N = 1;
-m = 16;
+m = 8;
 % dBs = [-20, -10, -5, 0, 3, 5, 7, 10, 12, 15, 17, 20];
-dBs = 20:35;
+dBs = 1:35;
 inputPMFs = [];
 xSupports = [];
 qs = [];
 MIs = [];
 Es = [];
+ss = [];
 for db = dBs
     db
     E = 10.^(db/10);
-    [pX, xsupport, q, MI] = DABQ(N,E,m);
+    [pX, xsupport, q, MI, s] = DABQ(N,E,m);
     Es = [Es 10*log10(pX'*xsupport.^2)];
     MIs = [MIs MI];
-    inputPMFs = [inputPMFs pX];
-    xSupports = [xSupports xsupport];
+    inputPMFs = [inputPMFs symmetric_pad(pX, m)];
+    xSupports = [xSupports symmetric_pad(xsupport, m)];
     qs = [qs q];
+    ss = [ss s];
 end
-MIs = MIs
 
 %% plot
 
@@ -41,7 +42,7 @@ figure(2)
 xlim([min(dBs)-1,max(dBs)+1])
 hold on
 for i = 1:length(dBs)
-    [pX_merged, xsupport_merged] = remove_redundant(inputPMFs(:, i), xSupports(:, i));
+    [pX_merged, xsupport_merged] = remove_redundant(inputPMFs(:, i), xSupports(:, i), 1e-5, 1e-2);
     for j = 1:length(pX_merged)
         %pmf points
         plot(dBs(i), xsupport_merged(j),'ko', 'MarkerSize', 30*sqrt(pX_merged(j))/2+1e-10, 'MarkerFaceColor', 'r')

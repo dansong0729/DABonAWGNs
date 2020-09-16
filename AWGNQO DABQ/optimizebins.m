@@ -1,4 +1,4 @@
-function [q] = optimizebins(pX, xsupport, N, isSymmetric)
+function [q] = optimizebins(pX, xsupport, q_init, N, isSymmetric)
 %OPTIMIZEBINS Find optimal bins for AWGNQO channel given input pmf
 %   Performs alternating optimization on each bin threshold using fminbnd
 %   and terminates on sufficiently small mutual information gain between
@@ -7,6 +7,7 @@ function [q] = optimizebins(pX, xsupport, N, isSymmetric)
 %   INPUTS:
 %   pX: input pmf, as column probability vector
 %   xsupport: input pmf support points in ASCENDING order, as column vector
+%   q_init: initial guess for q
 %   N: channel noise power
 %   isSymmetric: set true to exploit xsupport symmetry about 0
 %   
@@ -22,8 +23,7 @@ maxIter = 1000;
 
 %initialize q to a guess, TODO: improve this (MLE?)
 %use midpoints
-q = (xsupport(2:end) + xsupport(1:end-1))./2;
-q = [-Inf; q; Inf];
+q = q_init;
 
 qsize = size(q,1); %used a lot when isSymmetric
 
