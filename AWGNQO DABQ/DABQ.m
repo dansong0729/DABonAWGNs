@@ -7,6 +7,8 @@ maxIter = 1e2;
 ETolerance = 1e-5;
 BAETolerance = 1e-5;
 DABTolerance = 3e-5;
+prob_thresh = 1e-10; %0 to disable remove redundant
+sup_thresh = 1e-4; %^ same
 DABiter = 1e2;
 tol = 1e-4;
 
@@ -34,10 +36,10 @@ for i = 1:maxIter
         if MI - DAB_MI < DABTolerance
             break
         end
-        [pX,xsupport] = remove_redundant(pX, xsupport, 1e-10, 1e-3);
+        [pX,xsupport] = remove_redundant(pX, xsupport, prob_thresh, sup_thresh);
         DAB_MI = MI;
         [pX, xsupport] = iteratesupport(pX, xsupport, q, N, E);
-        [pX,xsupport] = remove_redundant(pX, xsupport, 1e-10, 1e-3);
+        [pX,xsupport] = remove_redundant(pX, xsupport, prob_thresh, sup_thresh);
     end
     %end discrete DAB
     %check for DABQ convergence
