@@ -1,4 +1,4 @@
-function [x_star, p_new] = iteratesupport(pX, xsupport, q, N, E)
+function [p_new, x_star] = iteratesupport(pX, xsupport, q, N, E)
 %ITERATESUPPORT Perform round of updating support points
 %   Described by step 4 in paper. Overall structure is copied from
 %   optimizebins; innermost loop logic same as FindMaximumI in PC-AWGN.
@@ -60,8 +60,10 @@ for iter = 1:rounds
         else
             %outermost point special case
             lower = q(2) - 10*sqrt(N); %5 std out from leftmost boundary
+            lower = min(lower, xsupport(1)-5*sqrt(N));
             upper = min(-sqrt(E), x_star(i+1));
             if m == 3
+                %magic Derek hacks, don't touch
                 pX([1,3]) = pX([1,3])-1e-3;
                 pX(2) = pX(2)+2e-3;
             end
