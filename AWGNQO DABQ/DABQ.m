@@ -1,4 +1,4 @@
-function [pX, xsupport, q, MI, s] = DABQ(N, E, m)
+function [pX, xsupport, q, MI, s] = DABQ(N, E, supp_init, p_init)
 %DABQ Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -13,7 +13,8 @@ DABiter = 1e2;
 tol = 1e-4;
 
 %init
-[xsupport, U] = equilattice(m, E);
+xsupport = supp_init;
+U = p_init;
 pX = U;
 %initialize q to a guess, TODO: improve this (MLE?)
 %use midpoints

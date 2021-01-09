@@ -1,11 +1,11 @@
 N = 1;
 E = 10^(3.1);
 m = 4;
-
-[pX, xsupport, q, MI] = DABQ(N,E,m)
+[supp_init, p_init] = equilattice(m, E);
+[pX, xsupport, q, MI] = DABQ(N,E, supp_init, p_init);
 %% compute
 N = 1;
-m = 8;
+m = 16;
 % dBs = [-20, -10, -5, 0, 3, 5, 7, 10, 12, 15, 17, 20];
 dBs = 1:35;
 inputPMFs = [];
@@ -17,7 +17,8 @@ ss = [];
 for db = dBs
     db
     E = 10.^(db/10);
-    [pX, xsupport, q, MI, s] = DABQ(N,E,m);
+    [supp_init, p_init] = equilattice(m, E);
+    [pX, xsupport, q, MI, s] = DABQ(N,E, supp_init, p_init);
     Es = [Es 10*log10(pX'*xsupport.^2)];
     MIs = [MIs MI];
     inputPMFs = [inputPMFs symmetric_pad(pX, m)];
@@ -59,3 +60,12 @@ title('DABQ Optimized input PMFs with cardinality ' + string(m))
 xlabel('SNR (dB)')
 ylabel('Mass Point Locations')
 drawnow
+
+%% stemplot
+idx = 30;
+figure
+[pX_merged, xsupport_merged] = remove_redundant(inputPMFs(:, idx), xSupports(:, idx), 1e-5, 1e-2);
+stem(xsupport_merged, pX_merged)
+hold on
+stem(qs(2:end-1, idx), ones(m-1,1)*max(pX_merged)*1.05, 'Marker', 'none')
+ylim ([0,max(pX_merged)*1.05])
