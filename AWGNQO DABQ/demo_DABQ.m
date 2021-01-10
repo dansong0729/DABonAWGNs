@@ -2,12 +2,15 @@ N = 1;
 E = 10^(3.1);
 m = 4;
 [supp_init, p_init] = equilattice(m, E);
+%use midpoints
+q_init = (supp_init(2:end) + supp_init(1:end-1))./2;
+q_init = [-Inf; q_init; Inf];
 [pX, xsupport, q, MI] = DABQ(N,E, supp_init, p_init);
 %% compute
 N = 1;
-m = 16;
+m = 8;
 % dBs = [-20, -10, -5, 0, 3, 5, 7, 10, 12, 15, 17, 20];
-dBs = 1:35;
+dBs = 1:20;
 inputPMFs = [];
 xSupports = [];
 qs = [];
@@ -18,7 +21,9 @@ for db = dBs
     db
     E = 10.^(db/10);
     [supp_init, p_init] = equilattice(m, E);
-    [pX, xsupport, q, MI, s] = DABQ(N,E, supp_init, p_init);
+    q_init = (supp_init(2:end) + supp_init(1:end-1))./2;
+    q_init = [-Inf; q_init; Inf];
+    [pX, xsupport, q, MI, s] = DABQ(N,E, supp_init, p_init, q_init);
     Es = [Es 10*log10(pX'*xsupport.^2)];
     MIs = [MIs MI];
     inputPMFs = [inputPMFs symmetric_pad(pX, m)];

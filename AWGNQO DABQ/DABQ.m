@@ -1,4 +1,4 @@
-function [pX, xsupport, q, MI, s] = DABQ(N, E, supp_init, p_init)
+function [pX, xsupport, q, MI, s] = DABQ(N, E, supp_init, p_init, q_init)
 %DABQ Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -7,8 +7,8 @@ maxIter = 1e2;
 ETolerance = 1e-5;
 BAETolerance = 1e-5;
 DABTolerance = 3e-5;
-prob_thresh = 1e-10; %0 to disable remove redundant
-sup_thresh = 1e-4; %^ same
+prob_thresh = 0; %1e-10; %0 to disable remove redundant
+sup_thresh = 0; %1e-4; %^ same
 DABiter = 1e2;
 tol = 1e-4;
 
@@ -16,10 +16,8 @@ tol = 1e-4;
 xsupport = supp_init;
 U = p_init;
 pX = U;
-%initialize q to a guess, TODO: improve this (MLE?)
-%use midpoints
-q = (xsupport(2:end) + xsupport(1:end-1))./2;
-q = [-Inf; q; Inf];
+%initialize q to a guess
+q = q_init;
 
 s = 0.1;
 oldMI = 0;
