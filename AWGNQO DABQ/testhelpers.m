@@ -75,3 +75,10 @@ for s=ss
     MI = MI
     discreteMI(pX, Q); %correct MI
 end
+%% test trisect
+q = [-Inf; -6; -3; 0; 3; 6; Inf];
+trisect(q)
+q = [-Inf; -6; -3; 0; 3; Inf];
+trisect(q)
+q = [-Inf; -1; 1; Inf];
+trisect(q)
