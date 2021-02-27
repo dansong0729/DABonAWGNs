@@ -19,6 +19,7 @@ pYX = left; %get output matrix of right size
 %subtract cdf of left from right for bin probability
 %better precision when using normcdf at negative values
 negate = (left>=0)&(right>=0); %should flip when both positive offsets
-pYX(~negate) = normcdf(right(~negate), 0, N) - normcdf(left(~negate), 0, N);
-pYX(negate) = normcdf(-left(negate), 0, N) - normcdf(-right(negate), 0, N);
+s = sqrt(N); %sigma for normal distribution; noise rms
+pYX(~negate) = normcdf(right(~negate), 0, s) - normcdf(left(~negate), 0, s);
+pYX(negate) = normcdf(-left(negate), 0, s) - normcdf(-right(negate), 0, s);
 end
